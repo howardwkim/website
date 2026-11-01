@@ -5,8 +5,11 @@ const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
     return {
-      // Static page in public/boo-2026, served at its clean address.
-      beforeFiles: [{ source: "/boo-2026", destination: "/boo-2026/index.html" }],
+      // Static pages in public/, served at their clean addresses.
+      beforeFiles: [
+        { source: "/boo-2026", destination: "/boo-2026/index.html" },
+        { source: "/halloween-2026", destination: "/halloween-2026/index.html" },
+      ],
     };
   },
   async headers() {
