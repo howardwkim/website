@@ -3,10 +3,11 @@ import { withContentCollections } from "@content-collections/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  async rewrites() {
+  async redirects() {
     return [
-      // Static page in public/boo-2026. Next does not serve index.html for a folder.
-      { source: "/boo-2026", destination: "/boo-2026/index.html" },
+      // Static page in public/boo-2026. A redirect, not a rewrite: Spark resolves the
+      // page's relative .ply path against the address, so it has to sit inside the folder.
+      { source: "/boo-2026", destination: "/boo-2026/index.html", permanent: false },
     ];
   },
   async headers() {
