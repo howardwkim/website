@@ -175,22 +175,28 @@ function onOrient(e) {
   if (!t.active) { t.active = true; view.idleW = 0; }
   view.lastInput = sim.t;
 }
-const tiltBtn = document.getElementById('tilt');
+// Tilt is on from the start. An iPhone only asks for motion access on a tap, so there the page
+// shows one button while it loads, and the rise waits for it: nobody misses it behind the prompt.
 const hasOrientation = typeof window.DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer: coarse)').matches;
-if (hasOrientation) {
-  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-    tiltBtn.hidden = false;   // iOS: needs a tap to ask
-    tiltBtn.addEventListener('click', async () => {
-      try {
-        const res = await DeviceOrientationEvent.requestPermission();
-        if (res === 'granted') { window.addEventListener('deviceorientation', onOrient); tiltBtn.hidden = true; }
-      } catch (err) { tiltBtn.textContent = 'tilt unavailable'; }
-    });
-  } else {
-    window.addEventListener('deviceorientation', onOrient);
-  }
-}
-tiltBtn.addEventListener('dblclick', (e) => e.stopPropagation());
+const tilt = () => window.addEventListener('deviceorientation', onOrient);
+const started = new Promise((go) => {
+  if (!hasOrientation) { go(); return; }
+  if (typeof DeviceOrientationEvent.requestPermission !== 'function') { tilt(); go(); return; }
+  const startBtn = document.getElementById('start');
+  // already allowed in this visit: it answers without a tap, and otherwise simply refuses
+  const offer = () => { startBtn.hidden = false; };
+  DeviceOrientationEvent.requestPermission()
+    .then((res) => { if (res === 'granted') { tilt(); go(); } else offer(); })
+    .catch(offer);
+  setTimeout(offer, 1000);    // a browser that never answers must not leave anyone on the loader
+  startBtn.addEventListener('click', () => {
+    startBtn.hidden = true;
+    DeviceOrientationEvent.requestPermission()
+      .then((res) => { if (res === 'granted') tilt(); })
+      .catch(() => {})     // drag still turns the card
+      .finally(go);
+  });
+});
 
 const playRise = () => rise.play(CONTOUR, { speed: BOO.speed, face: BOO.face });
 document.getElementById('again').addEventListener('click', playRise);
@@ -251,8 +257,10 @@ function frame(now) {
 const statusEl = document.getElementById('status');
 const loading = new LoadStatus(statusEl, SUBJECT.url, { bar: document.getElementById('bar'), size: BOO.bytes });
 Promise.all([loadSubject(SUBJECT), layersReady])
-  .then(([subject]) => {
+  .then(async ([subject]) => {
     loading.done();
+    loading.say('Ready');
+    await started;
     document.getElementById('loading').remove();
     rise.bind(look.subjects[0], CARD);
     rise.hide();
