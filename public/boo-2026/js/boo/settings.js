@@ -7,11 +7,13 @@ const GROUP = PHOTOS.find((p) => p.id === 'group');
 const SANS = 'ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif';
 const SERIF = 'ui-serif, "Iowan Old Style", "Palatino", Georgia, serif';
 
-export const LOOK = { ...GROUP.look, ...{"tint": 0, "hue": 113, "saturation": 0, "intensity": 0.58, "glow": 0.62, "density": 0.71, "rim": 0.01, "form": 0, "keepColor": 0.21, "softness": 0.05, "breathing": 0.09, "flickerRate": 11.5, "flickerIntensity": 0.9, "scanlines": 0.38, "scanDensity": 81, "echo": 0, "chromatic": 0.48, "play": 0.63, "inner": 1, "edgeSoft": 0.31, "beam": 0.13, "dust": 0.12} };
+// Howard's saved tuning, then the colour he chose: just enough less see-through to read the sign
+export const LOOK = { ...GROUP.look, ...{"tint": 0, "hue": 113, "saturation": 0, "intensity": 0.58, "glow": 0.62, "density": 0.71, "rim": 0.01, "form": 0, "keepColor": 0.21, "softness": 0.05, "breathing": 0.09, "flickerRate": 11.5, "flickerIntensity": 0.9, "scanlines": 0.38, "scanDensity": 81, "echo": 0, "chromatic": 0.48, "play": 0.63, "inner": 1, "edgeSoft": 0.31, "beam": 0.13, "dust": 0.12}, inner: 0.82, density: 0.75, glow: 0.52, darkHide: 0.26, softness: 0.05 };
 
 export const BOO = {
-  url: GROUP.url,
-  bytes: 20689101,
+  url: './assets/group-sharp-sign-soft.ply',   // the group, with the sign's letters a deeper blue
+  grade: [1.05, 1.05, 1.08],   // contrast, saturation, level
+  bytes: 20678517,
   face: GROUP.face,
   depth: GROUP.depth,
   blackPoint: GROUP.blackPoint,

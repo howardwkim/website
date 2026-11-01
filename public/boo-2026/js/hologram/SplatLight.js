@@ -67,6 +67,7 @@ export class SplatLight {
       uNdcToEm: { value: new THREE.Matrix4() },
       uTime: sh.uTime, uScan: sh.uScan, uScanFreq: sh.uScanFreq, uBand: sh.uBand, uInner: sh.uInner,
       uDepthAlpha: { value: 0.3 },
+      uDarkHide: { value: 0.18 },
       uWindow: { value: new THREE.Vector2() },
       uWindowEye: { value: new THREE.Vector3() },
     };
@@ -180,6 +181,7 @@ export class SplatLight {
     this.uniforms.uNdcToEm.value.copy(emInv).multiply(camera.matrixWorld).multiply(camera.projectionMatrixInverse);
     const camEm = this._v.setFromMatrixPosition(camera.matrixWorld).applyMatrix4(emInv);
     this.uniforms.uWindowEye.value.copy(camEm);
+    this.uniforms.uDarkHide.value = p.darkHide ?? 0.18;
     if (look.splatRise) this.uniforms.uWindow.value.copy(look.splatRise.uniforms.rWindow.value);
     for (const it of this.items) {
       const { mesh, u } = it;

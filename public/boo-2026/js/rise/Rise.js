@@ -25,6 +25,12 @@ float riseHash(int i, uint salt) {
 `;
 
 const statements = (v) => /* glsl */ `
+// a colour grade: contrast, saturation, level. Off unless a page asks for it.
+if (${v.rGrade}.x > 0.0) {
+  float grey = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col = pow(max(mix(vec3(grey), col, ${v.rGrade}.y), vec3(0.0)), vec3(${v.rGrade}.x)) * ${v.rGrade}.z;
+}
+
 // a kept background always lives behind the card, so it only ever shows through the window
 if (float(${v.gsplat}.index) >= ${v.rPeople}) { e.z = min(e.z, -0.2); col *= 0.62; }
 
@@ -143,6 +149,7 @@ export class Rise {
     this.uniforms = {
       rOn: dyno.dynoFloat(0),
       rT: dyno.dynoFloat(0),
+      rGrade: dyno.dynoVec3(new THREE.Vector3()),    // contrast, saturation, level
       rPeople: dyno.dynoFloat(1e9),                  // splats from this index on are the room
       rWindow: dyno.dynoVec2(new THREE.Vector2(0.5, 0.725)),   // half the card
       rMin: dyno.dynoVec3(new THREE.Vector3()),
@@ -158,7 +165,7 @@ export class Rise {
       rEdge: dyno.dynoVec4(new THREE.Vector4()),     // front softness, start size, flash, sideways slide
     };
     this.types = {
-      rOn: 'float', rT: 'float', rPeople: 'float', rWindow: 'vec2', rMin: 'vec3', rInv: 'vec3', rPoint: 'vec4',
+      rOn: 'float', rT: 'float', rGrade: 'vec3', rPeople: 'float', rWindow: 'vec2', rMin: 'vec3', rInv: 'vec3', rPoint: 'vec4',
       rGroup: 'vec4', rTime: 'vec4', rPath: 'vec4', rFall: 'vec4', rDrawn: 'vec4', rLead: 'vec4', rSize: 'vec4', rEdge: 'vec4',
     };
     this.globals = globals;

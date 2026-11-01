@@ -1,6 +1,6 @@
 // The Boo 2026 card: one photo, one rise, nothing to tune. The rise plays when loading finishes,
 // and the card's layers lift with it; the repeat button starts both again from the beginning.
-// `?look=<JSON>` overrides the look, for comparing colours.
+// `?look=<JSON>`, `?grade=<JSON>` and `?subject=<file>` override those, for comparing colours.
 import * as THREE from 'three';
 import { HologramLook } from '../hologram/HologramLook.js';
 import { createStage, CARD } from '../stage/Card.js';
@@ -13,7 +13,7 @@ import { LoadStatus } from '../rise/LoadStatus.js';
 import { BOO, LOOK, LAYERS } from './settings.js';
 
 const params = new URLSearchParams(location.search);
-const SUBJECT = { rotation: [0, 0, 0], height: 0.9, centerY: -0.22, back: 'auto', maxWidth: 0.9, flipY: true, pop: BOO.pop, blackPoint: BOO.blackPoint, url: BOO.url, ...BOO.fit };
+const SUBJECT = { rotation: [0, 0, 0], height: 0.9, centerY: -0.22, back: 'auto', maxWidth: 0.9, flipY: true, pop: BOO.pop, blackPoint: BOO.blackPoint, url: new URL(params.get('subject') ?? BOO.url, document.baseURI).href, ...BOO.fit };
 const CONTOUR = DESIGNS.find((d) => d.id === 'contour');
 const sim = { t: 0 };   // simulation clock (advanced by rAF, or by holo.step() when testing)
 
@@ -28,6 +28,8 @@ camera.layers.enableAll();
 const look = new HologramLook(renderer, { ...LOOK, ...JSON.parse(params.get('look') ?? '{}') });
 look.shared.uDepthScale.value = BOO.depth;
 const rise = new Rise(look);
+const grade = JSON.parse(params.get('grade') ?? 'null') ?? BOO.grade;
+if (grade) rise.uniforms.rGrade.value.set(...grade);
 const stage = createStage(look);
 scene.add(stage.background);
 scene.add(stage.rig);

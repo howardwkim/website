@@ -475,6 +475,7 @@ uniform float uScanFreq;
 uniform float uBand;
 uniform float uInner;
 uniform float uDepthAlpha;
+uniform float uDarkHide;    // how much the darkest light hides what is behind it
 uniform vec2 uWindow;      // half the card, when what is behind it shows only through it (else 0)
 uniform vec3 uWindowEye;   // the camera, in the emitter frame
 
@@ -518,7 +519,7 @@ void main() {
 
   // dim light hides little of what is behind it; some of the far side always shows through
   float lit = dot(col, vec3(0.2126, 0.7152, 0.0722));
-  float occ = (0.18 + 0.82 * smoothstep(0.03, 0.55, lit)) * (1.0 - 0.6 * uInner);
+  float occ = (uDarkHide + (1.0 - uDarkHide) * smoothstep(0.03, 0.55, lit)) * (1.0 - 0.6 * uInner);
   fragColor = vec4(col * a, occ * a);
 #endif
 }
