@@ -3,6 +3,12 @@ import { withContentCollections } from "@content-collections/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      // Static page in public/boo-2026. Next does not serve index.html for a folder.
+      { source: "/boo-2026", destination: "/boo-2026/index.html" },
+    ];
+  },
   async headers() {
     return [
       {
